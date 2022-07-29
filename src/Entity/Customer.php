@@ -26,6 +26,7 @@ class Customer
     private string $password;
 
     #[ORM\JoinColumn(nullable: false)]
+    private User $user;
     public function __construct(string $firstname, string $lastname, string $email, string $password)
     {
         $this->firstname = $firstname;
