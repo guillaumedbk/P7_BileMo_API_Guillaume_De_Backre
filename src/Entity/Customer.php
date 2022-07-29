@@ -27,7 +27,7 @@ class Customer
 
     #[ORM\ManyToOne(inversedBy: 'customer')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private User $user;
 
     public function __construct(string $firstname, string $lastname, string $email, string $password)
     {
@@ -62,12 +62,12 @@ class Customer
         return $this->password;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 

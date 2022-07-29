@@ -123,20 +123,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstname;
     }
 
-    public function getLastname(): ?string
+    public function getLastname(): string
     {
         return $this->lastname;
     }
 
-    public function getCompany(): ?string
+    public function getCompany(): string
     {
         return $this->company;
     }
 
     /**
-     * @return Collection<int, Customer>
+     * @return iterable<Customer>
      */
-    public function getCustomer(): Collection
+    public function getCustomer(): iterable
     {
         return $this->customer;
     }
@@ -153,12 +153,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeCustomer(Customer $customer): self
     {
-        if ($this->customer->removeElement($customer)) {
-            // set the owning side to null (unless already changed)
-            if ($customer->getUser() === $this) {
-                $customer->setUser(null);
-            }
-        }
+        $this->customer->removeElement($customer);
 
         return $this;
     }
