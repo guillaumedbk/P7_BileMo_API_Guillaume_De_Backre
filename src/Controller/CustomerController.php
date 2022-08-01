@@ -19,4 +19,16 @@ class CustomerController extends AbstractController
 
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
+
+    #[Route('/customer/{identifier}', name: 'app_customer_detail')]
+    public function getCustomerDetail(string $identifier, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
+    {
+        $customer = $customerRepository->findBy(['identifier' => $identifier]);
+        if ($customer) {
+            $jsonCustomers = $serializer->serialize($customer, 'json');
+            return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
+        }
+        return new JsonResponse(null, Response::HTTP_NOT_FOUND, []);
+
+    }
 }
