@@ -5,7 +5,17 @@ namespace App\Entity;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation (
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "app_customer_detail",
+ *          parameters = { "identifier" = "expr(object.getIdentifier())" }
+ *     ),
+ * )
+ */
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {
