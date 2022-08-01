@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -17,9 +18,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const USER = 'USER';
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private string $id; //UUID
 
     #[ORM\Column(length: 180, unique: true)]
     private string $email;
@@ -47,6 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct(string $email, string $password, string $firstname, string $lastname, string $company)
     {
+        $this->id = Uuid::v1();
         $this->email = $email;
         $this->password = $password;
         $this->firstname = $firstname;
