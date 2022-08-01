@@ -22,7 +22,7 @@ class ProductController extends AbstractController
     }
 
     #[Route('/product/{slug}', name: 'app_product_detail', methods: ['GET'])]
-    public function getProductDetail(Product $product, ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
+    public function getProductDetail(Product $product, SerializerInterface $serializer): JsonResponse
     {
         $jsonProduct = $serializer->serialize($product, 'json');
 
