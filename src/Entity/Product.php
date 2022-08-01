@@ -4,7 +4,17 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation (
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "app_product_detail",
+ *          parameters = { "slug" = "expr(object.getSlug())" }
+ *     ),
+ * )
+ */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
