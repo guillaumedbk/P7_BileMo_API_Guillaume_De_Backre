@@ -6,3 +6,11 @@ App\Entity\User:
       - charles
       - lasqualle
       - Fnac
+  user2 :
+    __construct :
+      - 'admin@mail.com'
+      - mot de passe
+      - Régis
+      - Huilier
+      - Darty
+    roles: ['ADMIN']
