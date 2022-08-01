@@ -1,0 +1,7 @@
+App\Entity\Product:
+  product{1..10}:
+    __construct:
+      - "Apple"
+      - "XS pro Max <username()>"
+      - 999
+    slug: "XS pro Max <username()>"

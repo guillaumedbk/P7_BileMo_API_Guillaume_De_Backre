@@ -1,0 +1,8 @@
+App\Entity\User:
+  user1:
+    __construct:
+      - 'user@mail.com'
+      - mot de passe
+      - charles
+      - lasqualle
+      - Fnac

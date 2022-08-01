@@ -1,0 +1,8 @@
+App\Entity\Customer:
+  customer1:
+    __construct:
+      - Henry
+      - Dupond
+      - henry@mail.com
+      - mot de passe
+    user: "@user1"
