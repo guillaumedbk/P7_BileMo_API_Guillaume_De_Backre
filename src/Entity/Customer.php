@@ -40,7 +40,7 @@ class Customer
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private string $identifier;
 
     public function __construct(string $firstname, string $lastname, string $email, string $password)
