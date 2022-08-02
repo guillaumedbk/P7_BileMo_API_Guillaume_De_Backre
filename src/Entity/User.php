@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -40,6 +42,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private string $company;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Customer::class, orphanRemoval: true)]
+    private Collection $customer;
+
     public function __construct(string $email, string $password, string $firstname, string $lastname, string $company)
     {
         $this->email = $email;
@@ -47,6 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->company = $company;
+        $this->customer = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -117,14 +123,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstname;
     }
 
-    public function getLastname(): ?string
+    public function getLastname(): string
     {
         return $this->lastname;
     }
 
-    public function getCompany(): ?string
+    public function getCompany(): string
     {
         return $this->company;
+    }
+
+    /**
+     * @return iterable<Customer>
+     */
+    public function getCustomer(): iterable
+    {
+        return $this->customer;
+    }
+
+    public function addCustomer(Customer $customer): self
+    {
+        if (!$this->customer->contains($customer)) {
+            $this->customer->add($customer);
+            $customer->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomer(Customer $customer): self
+    {
+        $this->customer->removeElement($customer);
+
+        return $this;
     }
 
 }

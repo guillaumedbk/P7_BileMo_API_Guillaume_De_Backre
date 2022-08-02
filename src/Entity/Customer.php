@@ -25,6 +25,10 @@ class Customer
     #[ORM\Column(length: 255)]
     private string $password;
 
+    #[ORM\ManyToOne(inversedBy: 'customer')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+
     public function __construct(string $firstname, string $lastname, string $email, string $password)
     {
         $this->firstname = $firstname;
@@ -56,5 +60,17 @@ class Customer
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }
