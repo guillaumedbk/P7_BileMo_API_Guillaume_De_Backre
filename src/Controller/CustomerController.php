@@ -11,12 +11,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CustomerController extends AbstractController
 {
-    #[Route('{user}/customers', name: 'app_user_customers')]
+    #[Route('{id}/customers', name: 'app_user_customers')]
     public function getAllCustomers(User $user, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
         $customers = $customerRepository->findBy(['user' => $user]);
         $jsonCustomers = $serializer->serialize($customers, 'json');
-        
+
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
 }
