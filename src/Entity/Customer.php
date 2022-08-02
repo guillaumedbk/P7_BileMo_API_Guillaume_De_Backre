@@ -4,7 +4,18 @@ namespace App\Entity;
 
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation (
+ *     "self",
+ *     href = @Hateoas\Route(
+ *          "app_customer_detail",
+ *          parameters = { "identifier" = "expr(object.getIdentifier())" }
+ *     ),
+ * )
+ */
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {
@@ -28,13 +39,17 @@ class Customer
     #[ORM\ManyToOne(inversedBy: 'customer')]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
-    
+
+    #[ORM\Column(length: 255, unique: true)]
+    private string $identifier;
+
     public function __construct(string $firstname, string $lastname, string $email, string $password)
     {
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->email = $email;
         $this->password = $password;
+        $this->identifier = $firstname . '-' . $lastname . '-' . Uuid::v1();
     }
 
     public function getId(): ?int
@@ -73,4 +88,10 @@ class Customer
 
         return $this;
     }
+
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
+    }
+
 }
