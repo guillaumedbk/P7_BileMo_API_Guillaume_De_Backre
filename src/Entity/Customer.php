@@ -77,6 +77,11 @@ class Customer
         return $this->password;
     }
 
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
     public function getUser(): User
     {
         return $this->user;
