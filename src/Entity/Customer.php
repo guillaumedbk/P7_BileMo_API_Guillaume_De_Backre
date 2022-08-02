@@ -28,7 +28,7 @@ class Customer
     #[ORM\ManyToOne(inversedBy: 'customer')]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
-
+    
     public function __construct(string $firstname, string $lastname, string $email, string $password)
     {
         $this->firstname = $firstname;

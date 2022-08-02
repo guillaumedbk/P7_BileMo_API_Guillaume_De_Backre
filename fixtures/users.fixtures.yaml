@@ -1,0 +1,16 @@
+App\Entity\User:
+  user1:
+    __construct:
+      - 'user@mail.com'
+      - mot de passe
+      - charles
+      - lasqualle
+      - Fnac
+  user2 :
+    __construct :
+      - 'admin@mail.com'
+      - mot de passe
+      - Régis
+      - Huilier
+      - Darty
+    roles: ['ADMIN']
