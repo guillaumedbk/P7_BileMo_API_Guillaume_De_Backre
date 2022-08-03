@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 use Hateoas\Configuration\Annotation as Hateoas;
 
@@ -14,7 +15,18 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *          "app_customer_detail",
  *          parameters = { "identifier" = "expr(object.getIdentifier())" }
  *     ),
+ *     exclusion = @Hateoas\Exclusion(groups="getCustomer")
  * )
+ *
+ *  * @Hateoas\Relation(
+ *      "create",
+ *      href = @Hateoas\Route(
+ *          "app_add_customer",
+ *          parameters = { "id" = "expr(object.getUser().getId())" },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
+ * )
+ *
  */
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -25,15 +37,19 @@ class Customer
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getCustomer"])]
     private string $firstname;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getCustomer"])]
     private string $lastname;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(["getCustomer"])]
     private string $email;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getCustomer"])]
     private string $password;
 
     #[ORM\ManyToOne(inversedBy: 'customer')]
@@ -41,6 +57,7 @@ class Customer
     private User $user;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["getCustomer"])]
     private string $identifier;
 
     public function __construct(string $firstname, string $lastname, string $email, string $password)

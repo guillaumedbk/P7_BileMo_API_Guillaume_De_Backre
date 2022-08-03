@@ -9,16 +9,15 @@ use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Config\Security\PasswordHasherConfig;
+
 
 class CustomerController extends AbstractController
 {
@@ -26,7 +25,8 @@ class CustomerController extends AbstractController
     public function getAllCustomers(User $user, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
         $customers = $customerRepository->findBy(['user' => $user]);
-        $jsonCustomers = $serializer->serialize($customers, 'json');
+        $context = SerializationContext::create()->setGroups(["getCustomer"]);
+        $jsonCustomers = $serializer->serialize($customers, 'json', $context);
 
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
@@ -36,7 +36,8 @@ class CustomerController extends AbstractController
     public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
         $customer = $customerRepository->findBy(['identifier' => $customer->getIdentifier()]);
-        $jsonCustomers = $serializer->serialize($customer, 'json');
+        $context = SerializationContext::create()->setGroups(["getCustomer"]);
+        $jsonCustomers = $serializer->serialize($customer, 'json', $context);
 
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
@@ -70,7 +71,8 @@ class CustomerController extends AbstractController
         $entityManager->flush();
 
         //Serialize
-        $newCustomer = $serializer->serialize($newCustomer, 'json');
+        $context = SerializationContext::create()->setGroups(["getCustomer"]);
+        $newCustomer = $serializer->serialize($newCustomer, 'json', $context);
         //Send Response
         return new JsonResponse($newCustomer, Response::HTTP_CREATED, [], true);
 
