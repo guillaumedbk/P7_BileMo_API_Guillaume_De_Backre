@@ -42,7 +42,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route('{id}/customer/add', name: 'app_add_customer', methods: ['POST'])]
-    public function addCustomer(string $id, Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function addCustomer(string $id, Request $request, UserRepository $userRepository, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
         //Retrieve data
         $payload = $serializer->deserialize($request->getContent(), CustomerDTO::class, 'json');
@@ -52,7 +52,12 @@ class CustomerController extends AbstractController
         $validation = $validator->validate($payload);
         $checkError = $validation->count();
         if (!empty($checkError)) {
-            return new JsonResponse($validation, Response::HTTP_BAD_GATEWAY, [], 'json');
+            return new JsonResponse($serializer->serialize($validation, 'json'), Response::HTTP_BAD_GATEWAY, [], 'json');
+        }
+        //Check if mail already exist
+        $mailExist = $customerRepository->findBy(['email' => $payload->email]);
+        if ($mailExist) {
+            return new JsonResponse('Mail already exist', Response::HTTP_BAD_GATEWAY, [], 'json');
         }
         //New user
         $newCustomer = new Customer($payload->firstname, $payload->lastname, $payload->email, $payload->password);
