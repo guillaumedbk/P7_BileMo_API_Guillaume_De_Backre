@@ -75,6 +75,14 @@ class CustomerController extends AbstractController
         $newCustomer = $serializer->serialize($newCustomer, 'json', $context);
         //Send Response
         return new JsonResponse($newCustomer, Response::HTTP_CREATED, [], true);
+    }
 
+    #[Route('/customer/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
+    public function deleteCustomer(Customer $customer, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $entityManager->remove($customer);
+        $entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, []);
     }
 }
