@@ -27,6 +27,15 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
  * )
  *
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "app_delete_customer",
+ *          parameters = { "identifier" = "expr(object.getIdentifier())" },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
+ * )
+ *
  */
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
