@@ -125,4 +125,9 @@ class Customer
         return $this->identifier;
     }
 
+    public function getUsername(): string
+    {
+        return $this->getIdentifier();
+    }
+
 }
