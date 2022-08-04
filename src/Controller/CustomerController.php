@@ -15,13 +15,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class CustomerController extends AbstractController
 {
-    #[Route('{id}/customers', name: 'app_user_customers')]
+    #[Route('/api/{id}/customers', name: 'app_user_customers')]
     public function getAllCustomers(User $user, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
         $customers = $customerRepository->findBy(['user' => $user]);
@@ -32,7 +33,7 @@ class CustomerController extends AbstractController
     }
 
 
-    #[Route('/customer/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
+    #[Route('/api/customer/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
     public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
         $customer = $customerRepository->findBy(['identifier' => $customer->getIdentifier()]);
@@ -42,8 +43,8 @@ class CustomerController extends AbstractController
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
 
-    #[Route('{id}/customer/add', name: 'app_add_customer', methods: ['POST'])]
-    public function addCustomer(string $id, Request $request, UserRepository $userRepository, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    #[Route('/api/{id}/customer/add', name: 'app_add_customer', methods: ['POST'])]
+    public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
         //Retrieve data
         $payload = $serializer->deserialize($request->getContent(), CustomerDTO::class, 'json');
@@ -63,7 +64,7 @@ class CustomerController extends AbstractController
         //New user
         $newCustomer = new Customer($payload->firstname, $payload->lastname, $payload->email, $payload->password);
         //Set hashed password
-        $newCustomer->setPassword(password_hash($payload->password, PASSWORD_DEFAULT));
+        $newCustomer->setPassword($userPasswordHasher->hashPassword($newCustomer, $payload->password));
         //Set User
         $newCustomer->setUser($user);
         //Save in db
@@ -77,7 +78,7 @@ class CustomerController extends AbstractController
         return new JsonResponse($newCustomer, Response::HTTP_CREATED, [], true);
     }
 
-    #[Route('/customer/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
+    #[Route('/api/customer/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
     public function deleteCustomer(Customer $customer, EntityManagerInterface $entityManager): JsonResponse
     {
         $entityManager->remove($customer);

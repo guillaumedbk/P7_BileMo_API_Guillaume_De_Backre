@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Hateoas\Configuration\Annotation as Hateoas;
 
@@ -38,7 +40,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *
  */
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
-class Customer
+class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -125,9 +127,22 @@ class Customer
         return $this->identifier;
     }
 
-    public function getUsername(): string
+    public function getRoles(): array
     {
-        return $this->getIdentifier();
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
+    public function eraseCredentials()
+    {
+
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
 }

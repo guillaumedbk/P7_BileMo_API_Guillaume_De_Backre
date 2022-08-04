@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {
-    #[Route('/products', name: 'app_products', methods: ['GET'])]
+    #[Route('/api/products', name: 'app_products', methods: ['GET'])]
     public function getAllProducts(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
         $products = $productRepository->findAll();
@@ -21,7 +21,7 @@ class ProductController extends AbstractController
         return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/product/{slug}', name: 'app_product_detail', methods: ['GET'])]
+    #[Route('/api/product/{slug}', name: 'app_product_detail', methods: ['GET'])]
     public function getProductDetail(Product $product, SerializerInterface $serializer): JsonResponse
     {
         $jsonProduct = $serializer->serialize($product, 'json');
