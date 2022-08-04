@@ -13,9 +13,9 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    //Status const
-    public const ADMIN = 'ADMIN';
-    public const USER = 'USER';
+    //Roles const
+    public const ADMIN = 'ROLE_ADMIN';
+    public const USER = 'ROLE_USER';
 
     #[ORM\Id]
     #[ORM\Column]
