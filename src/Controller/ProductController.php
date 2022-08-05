@@ -22,8 +22,17 @@ class ProductController extends AbstractController
      * @param Request $request
      * @param ProductRepository $productRepository
      * @param SerializerInterface $serializer
+     * @param TagAwareCacheInterface $cache
      * @return JsonResponse
+     * @throws InvalidArgumentException
      * @OA\Tag(name="Products")
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="La page que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     *
      */
     #[Route('/api/products', name: 'app_products', methods: ['GET'])]
     public function getAllProducts(Request $request, ProductRepository $productRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
