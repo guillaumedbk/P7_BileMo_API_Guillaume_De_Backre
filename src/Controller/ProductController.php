@@ -9,9 +9,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
 class ProductController extends AbstractController
 {
+    /**
+     * Cette méthode permet de récupérer l'ensemble des produits
+     * @param ProductRepository $productRepository
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
+     * @OA\Tag(name="Products")
+     */
     #[Route('/api/products', name: 'app_products', methods: ['GET'])]
     public function getAllProducts(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -21,6 +29,13 @@ class ProductController extends AbstractController
         return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Cette méthode permet de récupérer un produit en particulier
+     * @param Product $product
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
+     * @OA\Tag(name="Products")
+     */
     #[Route('/api/product/{slug}', name: 'app_product_detail', methods: ['GET'])]
     public function getProductDetail(Product $product, SerializerInterface $serializer): JsonResponse
     {

@@ -19,10 +19,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use OpenApi\Annotations as OA;
 
 
 class CustomerController extends AbstractController
 {
+    /**
+     * Cette méthode retourne l'ensemble des clients liés à un utilisateur
+     * @param User $user
+     * @param CustomerRepository $customerRepository
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
+     * @OA\Tag(name="Customer")
+     */
     #[Route('/api/{id}/customers', name: 'app_user_customers')]
     public function getAllCustomers(User $user, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -33,7 +42,14 @@ class CustomerController extends AbstractController
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
 
-
+    /**
+     * Cette méthode permet de récupérer un client en particulier
+     * @param Customer $customer
+     * @param CustomerRepository $customerRepository
+     * @param SerializerInterface $serializer
+     * @return JsonResponse
+     * @OA\Tag(name="Customer")
+     */
     #[Route('/api/customer/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
     public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -44,6 +60,20 @@ class CustomerController extends AbstractController
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
 
+
+    /**
+     * Cette méthode permet d'ajouter un nouveau client lié à un utilisateur
+     * @param string $id
+     * @param Request $request
+     * @param UserRepository $userRepository
+     * @param UserPasswordHasherInterface $userPasswordHasher
+     * @param CustomerRepository $customerRepository
+     * @param EntityManagerInterface $entityManager
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @return JsonResponse
+     * @OA\Tag(name="Customer")
+     */
     #[Route('/api/{id}/customer/add', name: 'app_add_customer', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un nouveau client !')]
     public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
@@ -80,6 +110,13 @@ class CustomerController extends AbstractController
         return new JsonResponse($newCustomer, Response::HTTP_CREATED, [], true);
     }
 
+    /**
+     * Cette méthode permet de supprimer un client lié à un utilisateur
+     * @param Customer $customer
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     * @OA\Tag (name="Customer")
+     */
     #[Route('/api/customer/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
     public function deleteCustomer(Customer $customer, EntityManagerInterface $entityManager): JsonResponse
     {
