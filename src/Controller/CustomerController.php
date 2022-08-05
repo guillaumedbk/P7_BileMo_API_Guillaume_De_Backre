@@ -20,6 +20,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use OpenApi\Annotations as OA;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 
 class CustomerController extends AbstractController
@@ -30,18 +32,27 @@ class CustomerController extends AbstractController
      * @param User $user
      * @param CustomerRepository $customerRepository
      * @param SerializerInterface $serializer
+     * @param TagAwareCacheInterface $cache
      * @return JsonResponse
+     * @throws \Psr\Cache\InvalidArgumentException
      * @OA\Tag(name="Customer")
      */
     #[Route('/api/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
-    public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
+    public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->get('page', 1);
         $limit = $this->getParameter('app.limit_per_page_param');
         $offset = (($page * $limit)-$page);
-        $customers = $customerRepository->findBy(['user' => $user], [], $limit, $offset);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
-        $jsonCustomers = $serializer->serialize($customers, 'json', $context);
+
+        //CACHE MANAGEMENT
+        $idCache = "getAllCustomers-" . $page;
+        $jsonCustomers = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $user, $limit, $offset, $context, $serializer) {
+            $item->tag("customersCache");
+            $customerList = $customerRepository->findBy(['user' => $user],[], $limit, $offset);
+
+            return $serializer->serialize($customerList, 'json', $context);
+        });
 
         return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
     }
@@ -55,13 +66,20 @@ class CustomerController extends AbstractController
      * @OA\Tag(name="Customer")
      */
     #[Route('/api/customer/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
-    public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
+    public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
-        $customer = $customerRepository->findBy(['identifier' => $customer->getIdentifier()]);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
-        $jsonCustomers = $serializer->serialize($customer, 'json', $context);
 
-        return new JsonResponse($jsonCustomers, Response::HTTP_OK, [], true);
+        //CACHE MANAGEMENT
+        $idCache = "getCustomerDetail-";
+        $jsonCustomer = $cache->get($idCache, function (ItemInterface $item) use ($customer, $customerRepository, $context, $serializer) {
+            $item->tag("customerCache");
+            $customer = $customerRepository->findBy(['identifier' => $customer->getIdentifier()]);
+
+            return $serializer->serialize($customer, 'json', $context);
+        });
+
+        return new JsonResponse($jsonCustomer, Response::HTTP_OK, [], true);
     }
 
 
