@@ -26,16 +26,20 @@ class CustomerController extends AbstractController
 {
     /**
      * Cette méthode retourne l'ensemble des clients liés à un utilisateur
+     * @param Request $request
      * @param User $user
      * @param CustomerRepository $customerRepository
      * @param SerializerInterface $serializer
      * @return JsonResponse
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/{id}/customers', name: 'app_user_customers')]
-    public function getAllCustomers(User $user, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
+    #[Route('/api/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
+    public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer): JsonResponse
     {
-        $customers = $customerRepository->findBy(['user' => $user]);
+        $page = $request->get('page', 1);
+        $limit = $this->getParameter('app.limit_per_page_param');
+        $offset = (($page * $limit)-$page);
+        $customers = $customerRepository->findBy(['user' => $user], [], $limit, $offset);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
         $jsonCustomers = $serializer->serialize($customers, 'json', $context);
 

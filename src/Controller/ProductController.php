@@ -7,6 +7,7 @@ use App\Repository\ProductRepository;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
@@ -21,9 +22,12 @@ class ProductController extends AbstractController
      * @OA\Tag(name="Products")
      */
     #[Route('/api/products', name: 'app_products', methods: ['GET'])]
-    public function getAllProducts(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
+    public function getAllProducts(Request $request, ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
-        $products = $productRepository->findAll();
+        $page = $request->get('page', 1);
+        $limit = $this->getParameter('app.limit_per_page_param');
+        $offset = (($page * $limit)-$page);
+        $products = $productRepository->findBy([],[], $limit, $offset);
         $jsonProducts = $serializer->serialize($products, 'json');
 
         return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
