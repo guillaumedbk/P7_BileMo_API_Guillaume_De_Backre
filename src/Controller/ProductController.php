@@ -63,7 +63,7 @@ class ProductController extends AbstractController
      * @throws InvalidArgumentException
      * @OA\Tag(name="Products")
      */
-    #[Route('/api/product/{slug}', name: 'app_product_detail', methods: ['GET'])]
+    #[Route('/api/products/{slug}', name: 'app_product_detail', methods: ['GET'])]
     public function getProductDetail(Product $product, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         //CACHE MANAGEMENT

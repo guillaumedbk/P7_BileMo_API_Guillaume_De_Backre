@@ -45,7 +45,7 @@ class CustomerController extends AbstractController
      * )
      *
      */
-    #[Route('/api/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
+    #[Route('/api/users/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
     public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->get('page', 1);
@@ -73,7 +73,7 @@ class CustomerController extends AbstractController
      * @return JsonResponse
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/customer/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
+    #[Route('/api/customers/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
     public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
@@ -104,7 +104,7 @@ class CustomerController extends AbstractController
      * @return JsonResponse
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/{id}/customer/add', name: 'app_add_customer', methods: ['POST'])]
+    #[Route('/api/users/{id}/customer/add', name: 'app_add_customer', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un nouveau client !')]
     public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
@@ -147,7 +147,7 @@ class CustomerController extends AbstractController
      * @return JsonResponse
      * @OA\Tag (name="Customer")
      */
-    #[Route('/api/customer/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
+    #[Route('/api/customers/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
     public function deleteCustomer(Customer $customer, EntityManagerInterface $entityManager): JsonResponse
     {
         $entityManager->remove($customer);
