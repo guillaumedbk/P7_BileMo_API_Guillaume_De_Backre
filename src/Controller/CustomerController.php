@@ -104,7 +104,7 @@ class CustomerController extends AbstractController
      * @return JsonResponse
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/users/{id}/customer/add', name: 'app_add_customer', methods: ['POST'])]
+    #[Route('/api/users/{id}/customers/add', name: 'app_add_customer', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un nouveau client !')]
     public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
