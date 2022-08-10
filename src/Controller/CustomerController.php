@@ -34,6 +34,7 @@ class CustomerController extends AbstractController
      * @param CustomerRepository $customerRepository
      * @param SerializerInterface $serializer
      * @param TagAwareCacheInterface $cache
+     * @param $limitPerPage
      * @return JsonResponse
      * @throws InvalidArgumentException
      * @OA\Tag(name="Customer")
@@ -43,7 +44,6 @@ class CustomerController extends AbstractController
      *     description="La page que l'on veut récupérer",
      *     @OA\Schema(type="int")
      * )
-     *
      */
     #[Route('/api/users/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
     public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
@@ -65,20 +65,22 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * Cette méthode permet de récupérer un client en particulier
+     * Cette méthode permet de récupérer le détail d'un client en particulier
      * @param Customer $customer
      * @param CustomerRepository $customerRepository
      * @param SerializerInterface $serializer
+     * @param TagAwareCacheInterface $cache
      * @return JsonResponse
+     * @throws InvalidArgumentException
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/customers/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
+    #[Route('/api/users/{id}/customers/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
     public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
-
+        $identifier = $customer->getIdentifier();
         //CACHE MANAGEMENT
-        $idCache = "getCustomerDetail-";
+        $idCache = "getCustomerDetail-" . $identifier;
         $jsonCustomer = $cache->get($idCache, function (ItemInterface $item) use ($customer, $customerRepository, $context, $serializer) {
             $item->tag("customerCache");
             $customer = $customerRepository->findBy(['identifier' => $customer->getIdentifier()]);
@@ -146,7 +148,7 @@ class CustomerController extends AbstractController
      * @return JsonResponse
      * @OA\Tag (name="Customer")
      */
-    #[Route('/api/customers/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
+    #[Route('/api/users/{id}/customers/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
     public function deleteCustomer(Customer $customer, EntityManagerInterface $entityManager): JsonResponse
     {
         $entityManager->remove($customer);

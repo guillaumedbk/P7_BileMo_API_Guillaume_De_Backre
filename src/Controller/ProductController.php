@@ -65,8 +65,9 @@ class ProductController extends AbstractController
     #[Route('/api/products/{slug}', name: 'app_product_detail', methods: ['GET'])]
     public function getProductDetail(Product $product, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
+        $slug = $product->getSlug();
         //CACHE MANAGEMENT
-        $idCache = "getProductDetail-";
+        $idCache = "getProductDetail-" . $slug;
         $jsonProduct = $cache->get($idCache, function (ItemInterface $item) use ($product, $serializer) {
             $item->tag("productDetailCache");
 
