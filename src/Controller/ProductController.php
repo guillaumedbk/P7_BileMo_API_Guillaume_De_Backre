@@ -39,7 +39,7 @@ class ProductController extends AbstractController
     {
         //RETRIEVE PRODUCTS WITH PAGINATION SYSTEM
         $page = $request->get('page', 1);
-        $offset = (($page * $limitPerPage)-$page);
+        $offset = (($page * $limitPerPage)-$limitPerPage);
 
         //CACHE MANAGEMENT
         $idCache = "getAllProducts-" . $page;

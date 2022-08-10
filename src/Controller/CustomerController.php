@@ -49,7 +49,7 @@ class CustomerController extends AbstractController
     public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
     {
         $page = $request->get('page', 1);
-        $offset = (($page * $limitPerPage)-$page);
+        $offset = (($page * $limitPerPage)-$limitPerPage);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
 
         //CACHE MANAGEMENT
@@ -103,7 +103,7 @@ class CustomerController extends AbstractController
      * @return JsonResponse
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/users/{id}/customers/add', name: 'app_add_customer', methods: ['POST'])]
+    #[Route('/api/users/{id}/customers', name: 'app_add_customer', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un nouveau client !')]
     public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
