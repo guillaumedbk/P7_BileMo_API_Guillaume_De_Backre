@@ -46,18 +46,17 @@ class CustomerController extends AbstractController
      *
      */
     #[Route('/api/users/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
-    public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
     {
         $page = $request->get('page', 1);
-        $limit = $this->getParameter('app.limit_per_page_param');
-        $offset = (($page * $limit)-$page);
+        $offset = (($page * $limitPerPage)-$page);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
 
         //CACHE MANAGEMENT
         $idCache = "getAllCustomers-" . $page;
-        $jsonCustomers = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $user, $limit, $offset, $context, $serializer) {
+        $jsonCustomers = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $user, $limitPerPage, $offset, $context, $serializer) {
             $item->tag("customersCache");
-            $customerList = $customerRepository->findBy(['user' => $user],[], $limit, $offset);
+            $customerList = $customerRepository->findBy(['user' => $user],[], $limitPerPage, $offset);
 
             return $serializer->serialize($customerList, 'json', $context);
         });
