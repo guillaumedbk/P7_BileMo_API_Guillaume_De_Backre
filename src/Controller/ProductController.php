@@ -23,6 +23,7 @@ class ProductController extends AbstractController
      * @param ProductRepository $productRepository
      * @param SerializerInterface $serializer
      * @param TagAwareCacheInterface $cache
+     * @param $limitPerPage
      * @return JsonResponse
      * @throws InvalidArgumentException
      * @OA\Tag(name="Products")
@@ -32,20 +33,18 @@ class ProductController extends AbstractController
      *     description="La page que l'on veut récupérer",
      *     @OA\Schema(type="int")
      * )
-     *
      */
     #[Route('/api/products', name: 'app_products', methods: ['GET'])]
     public function getAllProducts(Request $request, ProductRepository $productRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
     {
         //RETRIEVE PRODUCTS WITH PAGINATION SYSTEM
         $page = $request->get('page', 1);
-        $offset = (($page * $limitPerPage)-$limitPerPage);
 
         //CACHE MANAGEMENT
         $idCache = "getAllProducts-" . $page;
-        $jsonProducts = $cache->get($idCache, function (ItemInterface $item) use ($productRepository, $page, $limitPerPage, $offset, $serializer) {
+        $jsonProducts = $cache->get($idCache, function (ItemInterface $item) use ($productRepository, $page, $limitPerPage, $serializer) {
             $item->tag("productCache");
-            $productList = $productRepository->findBy([],[], $limitPerPage, $offset);
+            $productList = $productRepository->retrieveWithPagination($page, $limitPerPage);
 
             return $serializer->serialize($productList, 'json');
         });

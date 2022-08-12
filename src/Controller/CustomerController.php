@@ -49,14 +49,13 @@ class CustomerController extends AbstractController
     public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
     {
         $page = $request->get('page', 1);
-        $offset = (($page * $limitPerPage)-$limitPerPage);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
 
         //CACHE MANAGEMENT
         $idCache = "getAllCustomers-" . $page;
-        $jsonCustomers = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $user, $limitPerPage, $offset, $context, $serializer) {
+        $jsonCustomers = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $user, $limitPerPage, $context, $serializer) {
             $item->tag("customersCache");
-            $customerList = $customerRepository->findBy(['user' => $user],[], $limitPerPage, $offset);
+            $customerList = $customerRepository->retrieveWithPagination($user, $page, $limitPerPage);
 
             return $serializer->serialize($customerList, 'json', $context);
         });
