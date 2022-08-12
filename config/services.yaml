@@ -12,6 +12,11 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             $limitPerPage: '%env(LIMIT_PER_PAGE)%'
+    validator.unique.email_uniqueness:
+        class : App\Validator\Validators\EmailUniquenessValidator
+        arguments : [ '@doctrine.orm.entity_manager' ]
+        tags :
+            - { name : validator.constraint_validator, alias : email_uniqueness }
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
