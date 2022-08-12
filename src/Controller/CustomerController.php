@@ -119,11 +119,6 @@ class CustomerController extends AbstractController
         if (!empty($checkError)) {
             return new JsonResponse($serializer->serialize($validation, 'json'), Response::HTTP_BAD_GATEWAY, [], 'json');
         }
-        //Check if mail already exist
-        $mailExist = $customerRepository->findBy(['email' => $payload->email]);
-        if ($mailExist) {
-            return new JsonResponse('Mail already exist', Response::HTTP_BAD_GATEWAY, [], 'json');
-        }
         //New user
         $newCustomer = new Customer($payload->firstname, $payload->lastname, $payload->email, $payload->password);
         //Set hashed password
