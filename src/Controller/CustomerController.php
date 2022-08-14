@@ -25,6 +25,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 
+
 class CustomerController extends AbstractController
 {
     /**
@@ -65,7 +66,8 @@ class CustomerController extends AbstractController
 
     /**
      * Cette méthode permet de récupérer le détail d'un client en particulier
-     * @param Customer $customer
+     * @param $identifier
+     * @param User $user
      * @param CustomerRepository $customerRepository
      * @param SerializerInterface $serializer
      * @param TagAwareCacheInterface $cache
@@ -74,15 +76,14 @@ class CustomerController extends AbstractController
      * @OA\Tag(name="Customer")
      */
     #[Route('/api/users/{id}/customers/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
-    public function getCustomerDetail(Customer $customer, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    public function getCustomerDetail($identifier, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
-        $identifier = $customer->getIdentifier();
         //CACHE MANAGEMENT
         $idCache = "getCustomerDetail-" . $identifier;
-        $jsonCustomer = $cache->get($idCache, function (ItemInterface $item) use ($customer, $customerRepository, $context, $serializer) {
+        $jsonCustomer = $cache->get($idCache, function (ItemInterface $item) use ($identifier, $customerRepository, $context, $serializer) {
             $item->tag("customerCache");
-            $customer = $customerRepository->findBy(['identifier' => $customer->getIdentifier()]);
+            $customer = $customerRepository->findBy(['identifier' => $identifier]);
 
             return $serializer->serialize($customer, 'json', $context);
         });
