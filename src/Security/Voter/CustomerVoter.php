@@ -10,16 +10,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class CustomerVoter extends Voter
 {
-    public const EDIT = 'CUSTOMER_EDIT';
-    public const VIEW = 'CUSTOMER_VIEW';
+    public const GET = 'GET';
 
     protected function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::EDIT, self::VIEW])
+        return $attribute == self::GET
             && $subject instanceof \App\Entity\Customer;
     }
 
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, $customer, TokenInterface $token): bool
     {
         $user = $token->getUser();
         // if the user is anonymous, do not grant access
@@ -27,25 +26,10 @@ class CustomerVoter extends Voter
             return false;
         }
 
-        switch ($attribute) {
-            case self::EDIT:
-                return $this->canEdit($subject, $user);
-                break;
-            case self::VIEW:
-                return $this->canView($subject, $user);
-                break;
+        if ($attribute == self::GET) {
+            return $user->getId() === $customer->getUser()->getId();
         }
 
         return false;
-    }
-
-    private function canEdit(Customer $customer, User $user):bool
-    {
-        return $user === $customer->getUser();
-    }
-
-    private function canView(Customer $customer, User $user):bool
-    {
-        return $user === $customer->getUser();
     }
 }

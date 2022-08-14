@@ -66,25 +66,22 @@ class CustomerController extends AbstractController
 
     /**
      * Cette méthode permet de récupérer le détail d'un client en particulier
-     * @param $identifier
-     * @param User $user
-     * @param CustomerRepository $customerRepository
+     * @param Customer $customer
      * @param SerializerInterface $serializer
      * @param TagAwareCacheInterface $cache
      * @return JsonResponse
      * @throws InvalidArgumentException
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/users/{id}/customers/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
-    public function getCustomerDetail($identifier, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    #[Route('/api/customers/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
+    public function getCustomerDetail(Customer $customer, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
+        $this->denyAccessUnlessGranted('GET', $customer);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
         //CACHE MANAGEMENT
-        $idCache = "getCustomerDetail-" . $identifier;
-        $jsonCustomer = $cache->get($idCache, function (ItemInterface $item) use ($identifier, $customerRepository, $context, $serializer) {
+        $idCache = "getCustomerDetail-" . $customer->getIdentifier();
+        $jsonCustomer = $cache->get($idCache, function (ItemInterface $item) use ($customer, $context, $serializer) {
             $item->tag("customerCache");
-            $customer = $customerRepository->findBy(['identifier' => $identifier]);
-
             return $serializer->serialize($customer, 'json', $context);
         });
 
@@ -150,5 +147,18 @@ class CustomerController extends AbstractController
         $entityManager->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, []);
+    }
+
+    public function hydrate($donnees)
+    {
+        foreach ($donnees as $attribut => $valeur)
+        {
+            $methode = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $attribut)));
+
+            if (is_callable(array($this, $methode)))
+            {
+                $this->$methode($valeur);
+            }
+        }
     }
 }
