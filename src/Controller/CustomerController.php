@@ -47,8 +47,9 @@ class CustomerController extends AbstractController
      * )
      */
     #[Route('/api/users/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
-    public function getAllCustomers(Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
+    public function getAllCustomers(string $id, Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
     {
+        $this->denyAccessUnlessGranted('GET_ALL', $id);
         $page = $request->get('page', 1);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
 
@@ -143,6 +144,7 @@ class CustomerController extends AbstractController
     #[Route('/api/users/{id}/customers/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
     public function deleteCustomer(Customer $customer, EntityManagerInterface $entityManager): JsonResponse
     {
+        $this->denyAccessUnlessGranted('DELETE', $customer);
         $entityManager->remove($customer);
         $entityManager->flush();
 
