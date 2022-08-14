@@ -148,17 +148,4 @@ class CustomerController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, []);
     }
-
-    public function hydrate($donnees)
-    {
-        foreach ($donnees as $attribut => $valeur)
-        {
-            $methode = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $attribut)));
-
-            if (is_callable(array($this, $methode)))
-            {
-                $this->$methode($valeur);
-            }
-        }
-    }
 }
