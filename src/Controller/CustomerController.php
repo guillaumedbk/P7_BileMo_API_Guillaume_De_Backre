@@ -106,7 +106,7 @@ class CustomerController extends AbstractController
      */
     #[Route('/api/users/{id}/customers', name: 'app_add_customer', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un nouveau client !')]
-    public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, CustomerRepository $customerRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
         //Retrieve data
         $payload = $serializer->deserialize($request->getContent(), CustomerDTO::class, 'json');
@@ -116,7 +116,7 @@ class CustomerController extends AbstractController
         $validation = $validator->validate($payload);
         $checkError = $validation->count();
         if (!empty($checkError)) {
-            return new JsonResponse($serializer->serialize($validation, 'json'), Response::HTTP_BAD_GATEWAY, [], 'json');
+            return new JsonResponse($serializer->serialize($validation, 'json'), Response::HTTP_UNPROCESSABLE_ENTITY, [], 'json');
         }
         //New user
         $newCustomer = new Customer($payload->firstname, $payload->lastname, $payload->email, $payload->password);
