@@ -1,0 +1,13 @@
+{
+  "name": "BileMo",
+  "lang": "fr",
+  "start_url": "/api",
+  "theme_color": "#2c3e50",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/public/favicon.ico",
+      "sizes": "512x512"
+    }
+  ]
+}

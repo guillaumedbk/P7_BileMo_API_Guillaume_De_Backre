@@ -30,6 +30,7 @@ class CustomerController extends AbstractController
 {
     /**
      * Cette méthode retourne l'ensemble des clients liés à un utilisateur
+     * @param string $id
      * @param Request $request
      * @param User $user
      * @param CustomerRepository $customerRepository

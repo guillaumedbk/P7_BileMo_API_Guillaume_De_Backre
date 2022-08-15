@@ -33,5 +33,4 @@ class EmailUniquenessValidator extends ConstraintValidator
                 ->addViolation();
         }
     }
-
 }

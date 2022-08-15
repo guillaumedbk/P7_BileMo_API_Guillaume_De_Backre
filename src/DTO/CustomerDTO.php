@@ -22,5 +22,4 @@ class CustomerDTO
 
     #[Assert\NotBlank]
     public string $password;
-
 }
