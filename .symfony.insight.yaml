@@ -1,0 +1,10 @@
+php_version: 8.1
+
+commit_failure_conditions:
+  - "project.severity.critical > 0"
+  - "project.severity.major > 0"
+  - "project.severity.minor > 0"
+  - "project.severity.info >= 15"
+
+global_exclude_dirs:
+  - fixtures
