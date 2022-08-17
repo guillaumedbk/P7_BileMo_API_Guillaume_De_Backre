@@ -20,7 +20,7 @@ class EmailUniquenessValidator extends ConstraintValidator
     {
         $nb = $this->customerRepository->count(array('email' => $value));
 
-        if ($nb > 0) {
+        if ($nb > 1) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

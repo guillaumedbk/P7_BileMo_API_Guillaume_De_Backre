@@ -10,10 +10,11 @@ class UserVoter extends Voter
 {
     public const GET = 'GET';
     public const DELETE = 'DELETE';
+    public const PUT = 'PUT';
 
     protected function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::GET, self::DELETE])
+        return in_array($attribute, [self::GET, self::DELETE, self::PUT])
             && $subject instanceof \App\Entity\User;
     }
 
@@ -28,6 +29,7 @@ class UserVoter extends Voter
         switch ($attribute) {
             case self::GET:
             case self::DELETE:
+            case self::PUT:
                 return $user->getId() === $subject->getId();
         }
 

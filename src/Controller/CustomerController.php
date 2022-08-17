@@ -142,8 +142,10 @@ class CustomerController extends AbstractController
     #[ParamConverter('user', options: ['mapping' => ['user_id' => 'id']])]
     public function modifyCustomer(User $user, Customer $customer, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
+        $this->denyAccessUnlessGranted('PUT', $user);
+        $this->denyAccessUnlessGranted('PUT', $customer);
         //Retrieve User
-        $payload = $serializer->deserialize($request->getContent(), UpdateCustomerDTO::class, 'json');
+        $payload = $serializer->deserialize($request->getContent(), CustomerDTO::class, 'json');
         //Data validation
         $validation = $validator->validate($payload);
         $checkError = $validation->count();
