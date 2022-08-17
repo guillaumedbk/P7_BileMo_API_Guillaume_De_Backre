@@ -2,33 +2,25 @@
 
 namespace App\Validator\Validators;
 
-use App\Entity\Customer;
 use App\Repository\CustomerRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 
 class EmailUniquenessValidator extends ConstraintValidator
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
+    protected CustomerRepository $customerRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(CustomerRepository $customerRepository)
     {
-        $this->em = $entityManager;
+        $this->customerRepository = $customerRepository;
     }
 
     public function validate(mixed $value, Constraint $constraint)
     {
-        $repository = $this->em->getRepository(Customer::class);
-        $mailExist = $repository->findOneBy(array(
-            'email' => $value
-        ));
-        if ($mailExist) {
+        $nb = $this->customerRepository->count(array('email' => $value));
+
+        if ($nb > 0) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

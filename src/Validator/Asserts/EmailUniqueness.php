@@ -16,6 +16,6 @@ class EmailUniqueness extends Constraint
 
     public function validatedBy()
     {
-        return 'email_uniqueness';
+        return EmailUniquenessValidator::class;
     }
 }
