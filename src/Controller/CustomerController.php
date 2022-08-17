@@ -108,12 +108,10 @@ class CustomerController extends AbstractController
      */
     #[Route('/api/users/{id}/customers', name: 'app_add_customer', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits suffisants pour créer un nouveau client !')]
-    public function addCustomer(string $id, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function addCustomer(User $user, Request $request, UserRepository $userRepository, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
         //Retrieve data
         $payload = $serializer->deserialize($request->getContent(), CustomerDTO::class, 'json');
-        //Related User
-        $user = $userRepository->find($id);
         //Data validation
         $validation = $validator->validate($payload);
         $checkError = $validation->count();
