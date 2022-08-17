@@ -106,6 +106,21 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
+    public function setFirstname(string $firstname): void
+    {
+        $this->firstname = $firstname;
+    }
+
+    public function setLastname(string $lastname): void
+    {
+        $this->lastname = $lastname;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
     public function setPassword(string $password): void
     {
         $this->password = $password;

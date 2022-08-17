@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\CustomerDTO;
+use App\DTO\UpdateCustomerDTO;
 use App\Entity\Customer;
 use App\Entity\User;
 use App\Repository\CustomerRepository;
@@ -134,6 +135,33 @@ class CustomerController extends AbstractController
         $newCustomer = $serializer->serialize($newCustomer, 'json', $context);
         //Send Response
         return new JsonResponse($newCustomer, Response::HTTP_CREATED, [], true);
+    }
+
+    #[Route('/api/users/{user_id}/customers/{id}', name: 'app_modify_customer', methods: ['PUT'])]
+    #[ParamConverter('customer', options: ['mapping' => ['id' => 'id', 'user_id' => 'user']])]
+    #[ParamConverter('user', options: ['mapping' => ['user_id' => 'id']])]
+    public function modifyCustomer(User $user, Customer $customer, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
+    {
+        //Retrieve User
+        $payload = $serializer->deserialize($request->getContent(), UpdateCustomerDTO::class, 'json');
+        //Data validation
+        $validation = $validator->validate($payload);
+        $checkError = $validation->count();
+        if (!empty($checkError)) {
+            return new JsonResponse($serializer->serialize($validation, 'json'), Response::HTTP_UNPROCESSABLE_ENTITY, [], 'json');
+        }
+        //Update Data
+        $customer->setFirstname($payload->firstname);
+        $customer->setLastname($payload->lastname);
+        $customer->setEmail($payload->email);
+        $customer->setPassword($payload->password);
+        $customer->setUser($user);
+        //Save in db
+        $entityManager->persist($customer);
+        $entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+
     }
 
     /**
