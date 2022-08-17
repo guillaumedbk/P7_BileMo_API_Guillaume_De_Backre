@@ -2,13 +2,11 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\Customer;
-use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class CustomerVoter extends Voter
+class UserVoter extends Voter
 {
     public const GET = 'GET';
     public const DELETE = 'DELETE';
@@ -16,23 +14,23 @@ class CustomerVoter extends Voter
     protected function supports(string $attribute, $subject): bool
     {
         return in_array($attribute, [self::GET, self::DELETE])
-            && $subject instanceof \App\Entity\Customer;
+            && $subject instanceof \App\Entity\User;
     }
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
-
         // if the user is anonymous, do not grant access
         if (!$user instanceof UserInterface) {
             return false;
         }
 
         switch ($attribute) {
-            case self::DELETE:
             case self::GET:
-                return $user->getId() === $subject->getUser()->getId();
+            case self::DELETE:
+                return $user->getId() === $subject->getId();
         }
+
         return false;
     }
 }

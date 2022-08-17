@@ -7,6 +7,7 @@ use App\Entity\Customer;
 use App\Entity\User;
 use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
+use App\Security\Voter\UserVoter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
@@ -30,7 +31,6 @@ class CustomerController extends AbstractController
 {
     /**
      * Cette méthode retourne l'ensemble des clients liés à un utilisateur
-     * @param string $id
      * @param Request $request
      * @param User $user
      * @param CustomerRepository $customerRepository
@@ -48,9 +48,9 @@ class CustomerController extends AbstractController
      * )
      */
     #[Route('/api/users/{id}/customers', name: 'app_user_customers', methods: ['GET'])]
-    public function getAllCustomers(string $id, Request $request, User $user, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
+    public function getAllCustomers(User $user, Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, TagAwareCacheInterface $cache, $limitPerPage): JsonResponse
     {
-        $this->denyAccessUnlessGranted('GET_ALL', $id);
+        $this->denyAccessUnlessGranted('GET', $user);
         $page = $request->get('page', 1);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
 
