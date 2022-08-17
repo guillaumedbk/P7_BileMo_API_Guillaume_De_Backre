@@ -16,8 +16,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     href = @Hateoas\Route(
  *          "app_customer_detail",
  *          parameters = {
- *              "id" = "expr(object.getUser().getId())",
- *              "identifier" = "expr(object.getIdentifier())"
+ *              "user_id" = "expr(object.getUser().getId())",
+ *              "id" = "expr(object.getIdentifier())"
  *          }
  *     ),
  *     exclusion = @Hateoas\Exclusion(groups="getCustomer")
@@ -37,8 +37,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      href = @Hateoas\Route(
  *          "app_delete_customer",
  *          parameters = {
- *              "id" = "expr(object.getUser().getId())",
- *              "identifier" = "expr(object.getIdentifier())"
+ *              "user_id" = "expr(object.getUser().getId())",
+ *              "id" = "expr(object.getIdentifier())"
  *          },
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
@@ -49,9 +49,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private string $id; //UUID
 
     #[ORM\Column(length: 255)]
     #[Groups(["getCustomer"])]
@@ -73,20 +72,16 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(["getCustomer"])]
-    private string $identifier;
-
     public function __construct(string $firstname, string $lastname, string $email, string $password)
     {
+        $this->id = Uuid::v1();
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->email = $email;
         $this->password = $password;
-        $this->identifier = $firstname . '-' . $lastname . '-' . Uuid::v1();
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -130,7 +125,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getIdentifier(): string
     {
-        return $this->identifier;
+        return $this->id;
     }
 
     public function getRoles(): array

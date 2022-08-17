@@ -13,7 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Psr\Cache\InvalidArgumentException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -69,19 +71,22 @@ class CustomerController extends AbstractController
     /**
      * Cette méthode permet de récupérer le détail d'un client en particulier
      * @param Customer $customer
+     * @param User $user
      * @param SerializerInterface $serializer
      * @param TagAwareCacheInterface $cache
      * @return JsonResponse
      * @throws InvalidArgumentException
      * @OA\Tag(name="Customer")
      */
-    #[Route('/api/customers/{identifier}', name: 'app_customer_detail', methods: ['GET'])]
-    public function getCustomerDetail(Customer $customer, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    #[Route('/api/users/{user_id}/customers/{id}', name: 'app_customer_detail', methods: ['GET'])]
+    #[ParamConverter('customer', options: ['mapping' => ['id' => 'id', 'user_id' => 'user']])]
+    #[ParamConverter('user', options: ['mapping' => ['user_id' => 'id']])]
+    public function getCustomerDetail(Customer $customer, User $user, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
-        $this->denyAccessUnlessGranted('GET', $customer);
+        $this->denyAccessUnlessGranted('GET', $user);
         $context = SerializationContext::create()->setGroups(["getCustomer"]);
         //CACHE MANAGEMENT
-        $idCache = "getCustomerDetail-" . $customer->getIdentifier();
+        $idCache = "getCustomerDetail-" . $customer->getId();
         $jsonCustomer = $cache->get($idCache, function (ItemInterface $item) use ($customer, $context, $serializer) {
             $item->tag("customerCache");
             return $serializer->serialize($customer, 'json', $context);
@@ -97,7 +102,6 @@ class CustomerController extends AbstractController
      * @param Request $request
      * @param UserRepository $userRepository
      * @param UserPasswordHasherInterface $userPasswordHasher
-     * @param CustomerRepository $customerRepository
      * @param EntityManagerInterface $entityManager
      * @param SerializerInterface $serializer
      * @param ValidatorInterface $validator
@@ -138,12 +142,14 @@ class CustomerController extends AbstractController
     /**
      * Cette méthode permet de supprimer un client lié à un utilisateur
      * @param Customer $customer
+     * @param User $user
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
      * @OA\Tag (name="Customer")
      */
-    #[Route('/api/users/{id}/customers/{identifier}', name: 'app_delete_customer', methods: ['DELETE'])]
-    public function deleteCustomer(Customer $customer, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/api/users/{user_id}/customers/{id}', name: 'app_delete_customer', methods: ['DELETE'])]
+    #[ParamConverter('customer', options: ['mapping' => ['user_id' => 'user_id', 'id' => 'id']])]
+    public function deleteCustomer(Customer $customer, User $user, EntityManagerInterface $entityManager): JsonResponse
     {
         $this->denyAccessUnlessGranted('DELETE', $customer);
         $entityManager->remove($customer);
