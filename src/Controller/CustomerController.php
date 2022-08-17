@@ -148,10 +148,11 @@ class CustomerController extends AbstractController
      * @OA\Tag (name="Customer")
      */
     #[Route('/api/users/{user_id}/customers/{id}', name: 'app_delete_customer', methods: ['DELETE'])]
-    #[ParamConverter('customer', options: ['mapping' => ['user_id' => 'user_id', 'id' => 'id']])]
+    #[ParamConverter('customer', options: ['mapping' => ['id' => 'id', 'user_id' => 'user']])]
+    #[ParamConverter('user', options: ['mapping' => ['user_id' => 'id']])]
     public function deleteCustomer(Customer $customer, User $user, EntityManagerInterface $entityManager): JsonResponse
     {
-        $this->denyAccessUnlessGranted('DELETE', $customer);
+        $this->denyAccessUnlessGranted('DELETE', $user);
         $entityManager->remove($customer);
         $entityManager->flush();
 
