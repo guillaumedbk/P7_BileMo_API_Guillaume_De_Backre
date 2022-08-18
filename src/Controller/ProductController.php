@@ -148,7 +148,7 @@ class ProductController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/api/products/{slug}', name: 'app_delete_product', methods: ['DELETE'])]
-    public function deleteCustomer(Product $product, EntityManagerInterface $entityManager): JsonResponse
+    public function deleteProduct(Product $product, EntityManagerInterface $entityManager): JsonResponse
     {
         $entityManager->remove($product);
         $entityManager->flush();
