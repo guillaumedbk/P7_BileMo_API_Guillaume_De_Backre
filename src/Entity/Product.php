@@ -17,6 +17,23 @@ use Symfony\Component\Uid\Uuid;
  *     ),
  * )
  * @Hateoas\Relation(
+ *      "create",
+ *      href = @Hateoas\Route(
+ *          "app_add_product",
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getProduct")
+ * )
+ * @Hateoas\Relation(
+ *      "update",
+ *      href = @Hateoas\Route(
+ *          "app_modify_product",
+ *          parameters = {
+ *              "slug" = "expr(object.getSlug())"
+ *          },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
+ * )
+ * @Hateoas\Relation(
  *      "delete",
  *      href = @Hateoas\Route(
  *          "app_delete_product",

@@ -31,6 +31,17 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
  * )
+ * * @Hateoas\Relation(
+ *      "update",
+ *      href = @Hateoas\Route(
+ *          "app_modify_customer",
+ *          parameters = {
+ *              "user_id" = "expr(object.getUser().getId())",
+ *              "id" = "expr(object.getUser().getId())"
+ *          },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
+ * )
  *
  * @Hateoas\Relation(
  *      "delete",
