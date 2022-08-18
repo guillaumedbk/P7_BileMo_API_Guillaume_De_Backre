@@ -96,7 +96,7 @@ class CustomerController extends AbstractController
 
     /**
      * Cette méthode permet d'ajouter un nouveau client lié à un utilisateur
-     * @param string $id
+     * @param User $user
      * @param Request $request
      * @param UserRepository $userRepository
      * @param UserPasswordHasherInterface $userPasswordHasher

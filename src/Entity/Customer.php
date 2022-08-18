@@ -65,7 +65,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getCustomer"])]
     private string $password;
 
     #[ORM\ManyToOne(inversedBy: 'customer')]

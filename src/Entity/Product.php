@@ -16,6 +16,16 @@ use Symfony\Component\Uid\Uuid;
  *          parameters = { "slug" = "expr(object.getSlug())" }
  *     ),
  * )
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "app_delete_product",
+ *          parameters = {
+ *              "slug" = "expr(object.getSlug())"
+ *          },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getProduct")
+ * )
  */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product

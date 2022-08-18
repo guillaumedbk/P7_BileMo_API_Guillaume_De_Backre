@@ -81,6 +81,14 @@ class ProductController extends AbstractController
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }
 
+
+    /**
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     */
     #[Route('api/products', name: 'app_add_product', methods: ['POST'])]
     public function addProduct(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -103,6 +111,15 @@ class ProductController extends AbstractController
         //Send Response
         return new JsonResponse($newProduct, Response::HTTP_CREATED, [], true);
     }
+
+    /**
+     * @param Product $product
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     */
     #[Route('api/products/{slug}', name: 'app_modify_product', methods: ['PUT'])]
     public function modifyProduct(Product $product, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -125,7 +142,12 @@ class ProductController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/api/products/{slug}', name: 'app_delete_customer', methods: ['DELETE'])]
+    /**
+     * @param Product $product
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
+     */
+    #[Route('/api/products/{slug}', name: 'app_delete_product', methods: ['DELETE'])]
     public function deleteCustomer(Product $product, EntityManagerInterface $entityManager): JsonResponse
     {
         $entityManager->remove($product);

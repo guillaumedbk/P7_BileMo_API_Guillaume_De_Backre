@@ -12,6 +12,34 @@ nelmio_api_doc:
           scheme: bearer
           bearerFormat: JWT
           in: header
+      schemas :
+        Customer : # Can be referenced as '#/components/schemas/Customer'
+          type : object
+          properties :
+            firstname :
+              type : string
+              default: Jules
+            lastname :
+              type : string
+              default: Dupond
+            email:
+              type: string
+              default: example@mail.com
+        CustomerDTO : # Can be referenced as '#/components/schemas/Customer'
+          type : object
+          properties :
+            firstname :
+              type : string
+              default : Jules
+            lastname :
+              type : string
+              default : Dupond
+            email :
+              type : string
+              default : example@mail.com
+            password :
+              type : string
+              default : motdepasse
     security:
       - Bearer: []
 
@@ -80,8 +108,160 @@ nelmio_api_doc:
               description: An authentication exception occurred.
           security: []
 
-  areas: # to filter documented areas
-    path_patterns:
-      - ^/api(?!(/doc|/doc.json|/token/refresh)$)
-    #host_patterns:
-    #    - ^/api
+      /api/users/{id}/customers :
+        get :
+          tags :
+            - Customer
+          summary : Return all customers linked to a user
+          operationId : getAllCustomers
+          parameters :
+            - name : id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+          responses :
+            '200' :
+              description : successful operation
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Customer'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user does not match the one for which you want to retrieve the clients
+
+        post :
+          tags :
+            - Customer
+          summary : allow to add a customer linked to a user
+          operationId : addCustomer
+          parameters :
+            - name : id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+          requestBody :
+            content :
+              application/json :
+                schema :
+                  $ref : '#/components/schemas/CustomerDTO'
+          responses :
+            '201' :
+              description : created
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Customer'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user isn't admin
+
+      /api/users/{user_id}/customers/{id} :
+        get:
+          tags :
+            - Customer
+          summary : allow to retrieve details of a customer linked to a user
+          operationId : getCustomerDetail
+          parameters :
+            user_id :
+              name : user_id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+            id :
+              name : id
+              in : path
+              description : id of the customer
+              required : true
+              schema :
+                type : string
+          responses :
+            '200' :
+              description : OK
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Customer'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user does not match the one who owns the customer
+            '404' :
+              description : Customer not found
+
+        delete:
+          tags:
+            - Customer
+          summary: allow to delete a customer linked to a user
+          operationId: deleteCustomer
+          parameters :
+              user_id:
+                name: user_id
+                in : path
+                description : id of the user
+                required : true
+                schema :
+                  type : string
+              id:
+                name: id
+                in : path
+                description : id of the customer
+                required : true
+                schema :
+                  type : string
+          responses :
+            '204' :
+              description : No Content
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user does not match the one who create the customer
+            '404' :
+              description : Customer not found
+
+        put:
+          tags:
+            - Customer
+          summary: modify a customer linked to a user
+          operationId: modifyCustomer
+          parameters :
+            user_id :
+              name : user_id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+            id :
+              name : id
+              in : path
+              description : id of the customer
+              required : true
+              schema :
+                type : string
+          requestBody :
+            content :
+              application/json :
+                schema :
+                  $ref : '#/components/schemas/CustomerDTO'
+          responses :
+              '204' :
+                description : No Content
+              '401' :
+                description : Unauthorized, Invalid Token
+              '403' :
+                description : Access Denied in case the connected user does not match the one who owns the customer
+              '404' :
+                description : Customer not found
+
+
+
+
