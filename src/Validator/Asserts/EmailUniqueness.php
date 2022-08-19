@@ -13,6 +13,14 @@ use Symfony\Component\Validator\Attribute\HasNamedArguments;
 class EmailUniqueness extends Constraint
 {
     public string $message = 'Email already exists';
+    public int $limit;
+
+    #[HasNamedArguments]
+    public function __construct(int $limit, array $groups = null, mixed $payload = null)
+    {
+        parent::__construct([], $groups, $payload);
+        $this->limit = $limit;
+    }
 
     public function validatedBy()
     {
