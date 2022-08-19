@@ -3,8 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\CustomerDTO;
-use App\DTO\putCustomerDTO;
-use App\DTO\UpdateCustomerDTO;
+use App\DTO\PutCustomerDTO;
 use App\Entity\Customer;
 use App\Entity\User;
 use App\Repository\CustomerRepository;
@@ -144,7 +143,7 @@ class CustomerController extends AbstractController
         $this->denyAccessUnlessGranted('PUT', $user);
         $this->denyAccessUnlessGranted('PUT', $customer);
         //Retrieve User
-        $payload = $serializer->deserialize($request->getContent(), putCustomerDTO::class, 'json');
+        $payload = $serializer->deserialize($request->getContent(), PutCustomerDTO::class, 'json');
         //Data validation
         $validation = $validator->validate($payload);
         $checkError = $validation->count();
