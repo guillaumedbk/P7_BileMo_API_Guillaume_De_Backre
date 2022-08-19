@@ -4,4 +4,4 @@ App\Entity\Product:
       - "Apple"
       - "XS pro Max <username()>"
       - 999
-    slug: "XS pro Max <username()>"
+    slug: "XS-pro-Max-<username()>"

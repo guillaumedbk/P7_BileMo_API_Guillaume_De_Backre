@@ -13,9 +13,9 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    //Status const
-    public const ADMIN = 'ADMIN';
-    public const USER = 'USER';
+    //Roles const
+    public const ADMIN = 'ROLE_ADMIN';
+    public const USER = 'ROLE_USER';
 
     #[ORM\Id]
     #[ORM\Column]
@@ -115,8 +115,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+
     }
 
     public function getFirstname(): string
@@ -157,6 +156,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->customer->removeElement($customer);
 
         return $this;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->getUserIdentifier();
     }
 
 }

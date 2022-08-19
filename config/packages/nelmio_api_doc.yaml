@@ -1,0 +1,408 @@
+nelmio_api_doc:
+  models: { use_jms: false }
+  documentation:
+    info:
+      title: BileMoAPI
+      description: This is an awesome API REST for BileMo!
+      version: 1.0.0
+    components:
+      securitySchemes:
+        Bearer:
+          type: http
+          scheme: bearer
+          bearerFormat: JWT
+          in: header
+      schemas :
+        Customer : # Can be referenced as '#/components/schemas/Customer'
+          type : object
+          properties :
+            firstname :
+              type : string
+              default: Jules
+            lastname :
+              type : string
+              default: Dupond
+            email:
+              type: string
+              default: example@mail.com
+        CustomerDTO : # Can be referenced as '#/components/schemas/Customer'
+          type : object
+          properties :
+            firstname :
+              type : string
+              default : Jules
+            lastname :
+              type : string
+              default : Dupond
+            email :
+              type : string
+              default : example@mail.com
+            password :
+              type : string
+              default : motdepasse
+        Product : # Can be referenced as '#/components/schemas/Product'
+          type : object
+          properties :
+            id :
+              type : string
+              default : 1234be311
+            brand :
+              type : string
+              default : Apple
+            model :
+              type : string
+              default : XS MAX
+            price:
+              type: int
+              default: 600
+        ProductDTO : # Can be referenced as '#/components/schemas/ProductDTO'
+          type : object
+          properties :
+            brand :
+              type : string
+              default : Apple
+            model :
+              type : string
+              default : XS MAX
+            price :
+              type : int
+              default : 600
+    security:
+      - Bearer: []
+
+    paths:
+      /api/login_check:
+        post:
+          tags:
+            - Login
+          summary: Login into the api.
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  properties:
+                    username:
+                      type: string
+                      default: admin@mail.com
+                    password:
+                      type: string
+                      default: mdp
+                  type: object
+          responses:
+            '200':
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      refresh_token:
+                        type: string
+            '401':
+              description: Invalid credentials
+            '400':
+              description: Invalid JSON.
+          security: []
+
+      /api/token/refresh:
+        post:
+          tags:
+            - Login
+          summary: Login into the api by refresh token.
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  properties:
+                    refresh_token:
+                      type: string
+                  type: object
+          responses:
+            '200':
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      refresh_token:
+                        type: string
+            '401':
+              description: An authentication exception occurred.
+          security: []
+
+      /api/users/{id}/customers :
+        get :
+          tags :
+            - Customer
+          summary : Return all customers linked to a user
+          operationId : getAllCustomers
+          parameters :
+            - name : id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+          responses :
+            '200' :
+              description : successful operation
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Customer'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user does not match the one for which you want to retrieve the clients
+
+        post :
+          tags :
+            - Customer
+          summary : allow to add a customer linked to a user
+          operationId : addCustomer
+          parameters :
+            - name : id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+          requestBody :
+            content :
+              application/json :
+                schema :
+                  $ref : '#/components/schemas/CustomerDTO'
+          responses :
+            '201' :
+              description : created
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Customer'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user isn't admin
+
+      /api/users/{user_id}/customers/{id} :
+        get:
+          tags :
+            - Customer
+          summary : allow to retrieve details of a customer linked to a user
+          operationId : getCustomerDetail
+          parameters :
+            user_id :
+              name : user_id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+            id :
+              name : id
+              in : path
+              description : id of the customer
+              required : true
+              schema :
+                type : string
+          responses :
+            '200' :
+              description : OK
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Customer'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user does not match the one who owns the customer
+            '404' :
+              description : Customer not found
+
+        delete:
+          tags:
+            - Customer
+          summary: allow to delete a customer linked to a user
+          operationId: deleteCustomer
+          parameters :
+              user_id:
+                name: user_id
+                in : path
+                description : id of the user
+                required : true
+                schema :
+                  type : string
+              id:
+                name: id
+                in : path
+                description : id of the customer
+                required : true
+                schema :
+                  type : string
+          responses :
+            '204' :
+              description : No Content
+            '401' :
+              description : Unauthorized, Invalid Token
+            '403' :
+              description : Access Denied in case the connected user does not match the one who create the customer
+            '404' :
+              description : Customer not found
+
+        put:
+          tags:
+            - Customer
+          summary: modify a customer linked to a user
+          operationId: modifyCustomer
+          parameters :
+            user_id :
+              name : user_id
+              in : path
+              description : id of the user
+              required : true
+              schema :
+                type : string
+            id :
+              name : id
+              in : path
+              description : id of the customer
+              required : true
+              schema :
+                type : string
+          requestBody :
+            content :
+              application/json :
+                schema :
+                  $ref : '#/components/schemas/CustomerDTO'
+          responses :
+              '204' :
+                description : No Content
+              '401' :
+                description : Unauthorized, Invalid Token
+              '403' :
+                description : Access Denied in case the connected user does not match the one who owns the customer
+              '404' :
+                description : Customer not found
+
+      /api/products :
+        get:
+          tags :
+            - Products
+          summary : allows the retrieval of all products
+          operationId : getAllProducts
+          responses :
+            '200' :
+              description : OK
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Product'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '404' :
+              description : not found
+
+        post:
+          tags :
+            - Products
+          summary : allows to add new product
+          operationId : addProduct
+          requestBody :
+            content :
+              application/json :
+                schema :
+                  $ref : '#/components/schemas/ProductDTO'
+          responses :
+            '201' :
+              description : created
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Product'
+            '401' :
+              description : Unauthorized, Invalid Token
+
+      /api/products/{slug} :
+        get :
+          tags :
+            - Products
+          summary : allows the retrieval details of a product
+          operationId : getProductDetail
+          parameters :
+            slug :
+              name : slug
+              in : path
+              description : slug of the product
+              required : true
+              schema :
+                type : string
+          responses :
+            '200' :
+              description : OK
+              content :
+                application/json :
+                  schema :
+                    $ref : '#/components/schemas/Product'
+            '401' :
+              description : Unauthorized, Invalid Token
+            '404' :
+              description : not found
+
+        put:
+          tags :
+            - Products
+          summary : allows to modify details of a product
+          operationId : modifyProduct
+          parameters :
+            slug :
+              name : slug
+              in : path
+              description : slug of the product
+              required : true
+              schema :
+                type : string
+          requestBody :
+            content :
+              application/json :
+                schema :
+                  $ref : '#/components/schemas/ProductDTO'
+          responses :
+            '204' :
+              description : No Content
+            '401' :
+              description : Unauthorized, Invalid Token
+            '404' :
+              description : Product not found
+
+        delete:
+          tags :
+            - Products
+          summary : allows to delete a product
+          operationId : deleteProduct
+          parameters :
+            slug :
+              name : slug
+              in : path
+              description : slug of the product
+              required : true
+              schema :
+                type : string
+          responses :
+            '204' :
+              description : No Content
+            '401' :
+              description : Unauthorized, Invalid Token
+            '404' :
+              description : Product not found
+
+  areas: # to filter documented areas
+    path_patterns:
+      - ^/api(?!(/doc|/doc.json|/token/refresh)$)
+    #host_patterns:
+    #    - ^/api
+
