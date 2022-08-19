@@ -16,8 +16,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     href = @Hateoas\Route(
  *          "app_customer_detail",
  *          parameters = {
- *              "id" = "expr(object.getUser().getId())",
- *              "identifier" = "expr(object.getIdentifier())"
+ *              "user_id" = "expr(object.getUser().getId())",
+ *              "id" = "expr(object.getIdentifier())"
  *          }
  *     ),
  *     exclusion = @Hateoas\Exclusion(groups="getCustomer")
@@ -31,14 +31,25 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
  * )
+ * * @Hateoas\Relation(
+ *      "update",
+ *      href = @Hateoas\Route(
+ *          "app_modify_customer",
+ *          parameters = {
+ *              "user_id" = "expr(object.getUser().getId())",
+ *              "id" = "expr(object.getUser().getId())"
+ *          },
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
+ * )
  *
  * @Hateoas\Relation(
  *      "delete",
  *      href = @Hateoas\Route(
  *          "app_delete_customer",
  *          parameters = {
- *              "id" = "expr(object.getUser().getId())",
- *              "identifier" = "expr(object.getIdentifier())"
+ *              "user_id" = "expr(object.getUser().getId())",
+ *              "id" = "expr(object.getIdentifier())"
  *          },
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="getCustomer")
@@ -49,9 +60,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private string $id; //UUID
 
     #[ORM\Column(length: 255)]
     #[Groups(["getCustomer"])]
@@ -66,27 +76,22 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getCustomer"])]
     private string $password;
 
     #[ORM\ManyToOne(inversedBy: 'customer')]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(["getCustomer"])]
-    private string $identifier;
-
     public function __construct(string $firstname, string $lastname, string $email, string $password)
     {
+        $this->id = Uuid::v1();
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->email = $email;
         $this->password = $password;
-        $this->identifier = $firstname . '-' . $lastname . '-' . Uuid::v1();
     }
 
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -111,6 +116,21 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
+    public function setFirstname(string $firstname): void
+    {
+        $this->firstname = $firstname;
+    }
+
+    public function setLastname(string $lastname): void
+    {
+        $this->lastname = $lastname;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
     public function setPassword(string $password): void
     {
         $this->password = $password;
@@ -130,7 +150,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getIdentifier(): string
     {
-        return $this->identifier;
+        return $this->id;
     }
 
     public function getRoles(): array

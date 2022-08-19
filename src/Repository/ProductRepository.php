@@ -39,7 +39,7 @@ class ProductRepository extends ServiceEntityRepository
         }
     }
 
-    public function retrieveWithPagination($page, $limit)
+    public function retrieveWithPagination(int $page, int $limit)
     {
         $query = $this->createQueryBuilder('c')
             ->setFirstResult(($page * $limit) - $limit)

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Customer;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,7 +41,7 @@ class CustomerRepository extends ServiceEntityRepository
         }
     }
 
-    public function retrieveWithPagination($user, $page, $limit)
+    public function retrieveWithPagination(User $user, int $page, int $limit)
     {
         $query = $this->createQueryBuilder('c')
             ->where('c.user = :user')
