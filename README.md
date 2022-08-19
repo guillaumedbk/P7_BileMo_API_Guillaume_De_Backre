@@ -34,7 +34,7 @@ symfony server:start
 
 
 ## Documentation
-All available endpoints are described in the API documentation accessible in your web browser at https://localhost:8000/api/doc/
+All available endpoints are described in the API documentation accessible in your web browser at http://127.0.0.1:8000/api/doc
 
 ## Symfony Insight
 https://insight.symfony.com/projects/91052858-c3dc-4074-a7a9-eecc01eb0792
